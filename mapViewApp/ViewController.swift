@@ -37,7 +37,6 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-            setupAnnotationLocation()
             map.addAnnotation(mapPin)
             map.register(CustomAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultAnnotationViewReuseIdentifier)
         if isFirstScreen {
@@ -175,7 +174,7 @@ class ViewController: UIViewController {
     @objc func mapTapped() {
         UIView.animate(withDuration: 0.3) { [self] in
             self.containerView.removeFromSuperview()
-            isFirstScreen = true
+//            isFirstScreen = true
             mapHeight?.constant = -80
             view.layoutIfNeeded()
         }
@@ -302,6 +301,24 @@ extension ViewController: MKMapViewDelegate, CLLocationManagerDelegate {
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         UIView.animate(withDuration: 0.5) { [self] in
             setupAnnotationLocation()
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .notDetermined:
+            mapLocationManager.requestWhenInUseAuthorization()
+        case .restricted:
+           makeAlert()
+        case .denied:
+           makeAlert()
+        case .authorizedAlways:
+            userLocationTracking()
+        case .authorizedWhenInUse:
+            userLocationTracking()
+        @unknown default:
+            makeAlert()
+            
         }
     }
     
